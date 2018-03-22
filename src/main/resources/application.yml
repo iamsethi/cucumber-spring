@@ -1,0 +1,39 @@
+project:
+name: to-smoke-suite-sls
+vaersion: 0.0.1-SNAPSHOT
+description: TO SMOKE SUITE SLS Spring Boot
+
+info:
+build:
+artifact:${project.artifactId}
+name:${project.name}
+description:${project.description}
+version:${project.version}
+
+---
+spring:
+profiles.active: stage
+
+---
+spring:
+profiles: stage
+
+logging:
+pattern:
+console: "%d %-5level %logger : %msg%n"
+level:
+root: DEBUG
+org.springframework: DEBUG
+com.wellmanage: DEBUG
+org.apache: DEBUG
+
+---
+spring:
+profiles:test
+logging:
+file: logs/production_app.log
+pattern: "%d %-5level [%thread] %logger{0} : %msg%n"
+level:
+org.springframework: WARN
+com.wellmanage: WARN
+org.apache: WARN
