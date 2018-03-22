@@ -1,14 +1,13 @@
 project:
-name: to-smoke-suite-sls
-vaersion: 0.0.1-SNAPSHOT
-description: TO SMOKE SUITE SLS Spring Boot
+name: cucumber-spring
+version: 0.0.1-SNAPSHOT
+
 
 info:
 build:
-artifact:${project.artifactId}
-name:${project.name}
-description:${project.description}
-version:${project.version}
+artifact: ${project.artifactId}
+name: ${project.name}
+version: ${project.version}
 
 ---
 spring:
@@ -29,7 +28,7 @@ org.apache: DEBUG
 
 ---
 spring:
-profiles:test
+profiles: test
 logging:
 file: logs/production_app.log
 pattern: "%d %-5level [%thread] %logger{0} : %msg%n"
