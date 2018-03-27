@@ -12,13 +12,25 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>
-			1.8
-		</java.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<cucumber-java.version>1.2.5</cucumber-java.version>
+		<gherkin.version>2.12.2</gherkin.version>
+		<selenium-java>2.53.0</selenium-java>
+		<cucumber-spring>1.2.5</cucumber-spring>
 	</properties>
-
+	<repositories>
+		<repository>
+			<id>WMC Central Artifactory</id>
+			<url>http://prod-mvn-repo/repo</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
 	<dependencies>
 
 		<dependency>
