@@ -22,15 +22,15 @@
 		</property>
 	</bean>
 
-	<bean id="BdiOtsDAO" class="com.wellmanage.database.BdiOtsDao">
-		<property name="dataSource" ref="BdiOTSDataSource" />
+	<bean id="TletIdrDAO" class="com.wellmanage.database.TletIdrDao">
+		<property name="dataSource" ref="TletIDRDataSource" />
 	</bean>
-	<bean id="BdiOTSDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+	<bean id="TletIDRDataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="${database.driver}" />
-		<property name="url" value="${ots.db.url}" />
-		<property name="username" value="${ots.db.username}" />
-		<property name="password" value="${ots.db.password}" />
+		<property name="url" value="${idr.db.url}" />
+		<property name="username" value="${idr.db.username}" />
+		<property name="password" value="${idr.db.password}" />
 	</bean>
 
 </beans>
