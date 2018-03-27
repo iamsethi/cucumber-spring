@@ -21,184 +21,150 @@
 
 	<dependencies>
 
-		<!-- https://mvnrepository.com/artifact/info.cukes/cucumber-junit -->
 		<dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-junit</artifactId>
-			<version>1.2.5</version>
-			<scope>test</scope>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.1.0</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/info.cukes/cucumber-spring -->
-		<dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-spring</artifactId>
-			<version>1.2.5</version>
-			<scope>test</scope>
-		</dependency>
-
-
-		<!-- https://mvnrepository.com/artifact/info.cukes/cucumber-java8 -->
-		<dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-java8</artifactId>
-			<version>1.2.5</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/info.cukes/cucumber-java -->
-		<dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-java</artifactId>
-			<version>1.2.5</version>
-		</dependency>
-
-
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>5.0.2.RELEASE</version>
+			<scope>compile</scope>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
-			<version>1.5.5.RELEASE</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<version>1.5.5.RELEASE</version>
 		</dependency>
-
-
-
-
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-java8</artifactId>
+			<version>${cucumber-java.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>5.0.2.RELEASE</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>5.0.2.RELEASE</version>
 		</dependency>
-
-
 		<dependency>
-			<groupId>aspectj</groupId>
+			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
-			<version>1.5.2a</version>
 		</dependency>
-
 
 		<dependency>
-			<groupId>aspectj</groupId>
+			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
-			<version>1.5.2</version>
 		</dependency>
-
-
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-junit</artifactId>
+			<version>${cucumber-java.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>2.9.5</version>
 		</dependency>
 
-
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-spring</artifactId>
+			<version>${cucumber-spring}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>2.53.1</version>
 		</dependency>
-
-
+		<dependency>
+			<groupId>com.atlassian.fugue</groupId>
+			<artifactId>fugue</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.jira</groupId>
+			<artifactId>jira-rest-java-client-api</artifactId>
+			<version>4.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.jira</groupId>
+			<artifactId>jira-rest-java-client-core</artifactId>
+			<version>4.0.0</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>2.26</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>2.26</version>
 		</dependency>
-
-
-
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>18.0</version>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-core</artifactId>
+			<version>${cucumber-java.version}</version>
 		</dependency>
-
-
 		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>1.19</version>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
 		</dependency>
-
-
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
-
-
 		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path</artifactId>
-			<version>2.4.0</version>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
 		</dependency>
-
-
-
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.5</version>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
 		</dependency>
-
-
 		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.4</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
 		</dependency>
-
-
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-
-
-
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.16</version>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+
 </project>
