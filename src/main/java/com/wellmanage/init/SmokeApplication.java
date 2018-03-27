@@ -6,13 +6,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+
 @SpringBootApplication
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties
-public class SmokeApplication {
-
-	public void psvm(String args[]) {
+public class SmokeApplication  {
+	
+	public static void main(String[] args) {
 		SpringApplication.run(SmokeApplication.class, args);
 	}
 }
