@@ -31,7 +31,7 @@ import org.springframework.test.context.ContextConfiguration;
 import com.wellmanage.common.Locators;
 import com.wellmanage.common.SeleniumLib;
 import com.wellmanage.database.TletIdrDao;
-import com.wellmanage.jira.JiraIntegration;
+//import com.wellmanage.jira.JiraIntegration;
 
 import cucumber.api.DataTable;
 import cucumber.api.Scenario;
@@ -75,7 +75,7 @@ public class TradeLetterTestUIScenario implements En {
 	private TletIdrDao tletIdrDao;
 
 	@Autowired
-	private JiraIntegration jiraIntegration;
+	// private JiraIntegration jiraIntegration;
 	private static final Logger LOGGER = Logger.getLogger(TradeLetterTestUIScenario.class.getName());
 
 	@After
@@ -93,7 +93,8 @@ public class TradeLetterTestUIScenario implements En {
 		g.setAccessible(true);
 		CucumberScenario cubScenario = (CucumberScenario) g.get(execution);
 		LOGGER.debug("Scenario Status: " + this.scenario.getStatus());
-		jiraIntegration.jiraMap(this.scenario.getSourceTagNames(), cubScenario, this.scenario.getStatus());
+		// jiraIntegration.jiraMap(this.scenario.getSourceTagNames(), cubScenario,
+		// this.scenario.getStatus());
 		if (SeleniumLib.getDriver() == null) {
 			LOGGER.debug("###Driver is Closed Not Active####");
 		} else {
