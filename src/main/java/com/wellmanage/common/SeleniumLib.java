@@ -12,16 +12,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -54,7 +51,8 @@ public class SeleniumLib {
 	public static String parentWindowHandle = null;
 	public static String childWindowHandle = null;
 	public static String downloadFilepath = null;
-	private static final Logger LOGGER = Logger.getLogger(SeleniumLib.class.getName());
+	// private static final Logger LOGGER =
+	// Logger.getLogger(SeleniumLib.class.getName());
 
 	public static void startSSLSelenium(String serverUrl, String node, String downloadLocation)
 			throws MalformedURLException {
@@ -282,8 +280,8 @@ public class SeleniumLib {
 	}
 
 	/**
-	 * Wait until element is present, if string for the locator is passed along
-	 * with its type (xpath, link, class etc) then By element is constructed
+	 * Wait until element is present, if string for the locator is passed along with
+	 * its type (xpath, link, class etc) then By element is constructed
 	 * 
 	 * @param locator
 	 * @param locatorType
@@ -904,8 +902,7 @@ public class SeleniumLib {
 	}
 
 	/**
-	 * Get the table data method it will return the Table existence as boolean
-	 * value
+	 * Get the table data method it will return the Table existence as boolean value
 	 * 
 	 * @param xpthdatatable
 	 *            The xpath for the element that should be visible
@@ -980,15 +977,15 @@ public class SeleniumLib {
 		if (file.isDirectory()) {
 			System.out.println("Size is : " + file.list().length);
 			if (afterNumber > beforeNumber) {
-				LOGGER.debug("###Directory is not empty!###");
+				// LOGGER.debug("###Directory is not empty!###");
 				return true;
 			} else {
-				LOGGER.debug("###Directory is empty!###");
+				// LOGGER.debug("###Directory is empty!###");
 				return false;
 			}
 
 		} else {
-			LOGGER.debug("###This is not a directory!###");
+			// LOGGER.debug("###This is not a directory!###");
 			return false;
 
 		}
