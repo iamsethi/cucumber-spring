@@ -7,9 +7,6 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.BadSqlGrammarException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -21,7 +18,7 @@ public class TletIdrDao {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TletIdrDao.class);
 
-	protected NamedParameterJdbcTemplate jdbcTemplate;
+	// protected NamedParameterJdbcTemplate jdbcTemplate;
 
 	protected DataSource dataSource;
 	protected String PARTY_ID;
@@ -108,72 +105,79 @@ public class TletIdrDao {
 
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
-		jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+		// jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 	}
 
 	public void deleteTradeLetter(List<String> tradeLetterIds) {
 
-		MapSqlParameterSource paramMap = new MapSqlParameterSource().addValue(Constants.TRADE_LETTER_ID,
-				tradeLetterIds);
-
-		try {
-			List<String> partyIds = jdbcTemplate.queryForList(selectPartyIdByTLId, paramMap, String.class);
-			List<String> fileIds = jdbcTemplate.query(selectFileIdTLId, paramMap, (rs, idx) -> {
-				return rs.getString(Constants.FILE_ID);
-			});
-			List<String> adminIds = jdbcTemplate.queryForList(selectAdminIdByTLId, paramMap, String.class);
-
-			paramMap.addValue(Constants.ADMIN_ID, adminIds);
-			List<String> adminPartyIds = jdbcTemplate.queryForList(selectAdminPartyIdByAId, paramMap, String.class);
-
-			paramMap.addValue(Constants.PARTY_ID, partyIds);
-			paramMap.addValue(Constants.ADMIN_PARTY_ID, adminPartyIds);
-			List<String> addressIds = jdbcTemplate.queryForList(selectAddressIdByPId, paramMap, String.class);
-			List<String> contactIds = jdbcTemplate.queryForList(selectContactIdByPId, paramMap, String.class);
-
-			paramMap.addValue(Constants.FILE_ID, fileIds);
-			paramMap.addValue(Constants.ADDRESS_ID, addressIds);
-			paramMap.addValue(Constants.CONTACT_ID, contactIds);
-
-			jdbcTemplate.update(deleteTLAcctGroup, paramMap);
-			LOGGER.info("**** delete from TL_ACCT_GROUP SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteTLSchedule, paramMap);
-			LOGGER.info("**** delete from TL_SCHEDULE SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteAEFileRecipient, paramMap);
-			LOGGER.info("**** delete from AE_FILE_RECIPIENT SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteAEFile, paramMap);
-			LOGGER.info("**** delete from AE_FILE SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteTLDeliveryMethod, paramMap);
-			LOGGER.info("**** delete from TL_DELIVERY_METHOD SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteTLExcludeSecType, paramMap);
-			LOGGER.info("**** delete from TL_EXCLUDE_SEC_TYPE SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteTradeLetter, paramMap);
-			LOGGER.info("**** delete from TRADE_LETTER SUCCESSFULL ****");
-
-			jdbcTemplate.update(deletePartyAddress, paramMap);
-			LOGGER.info("**** delete from PARTY_ADDRESS SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteAddress, paramMap);
-			LOGGER.info("**** delete from ADDRESS SUCCESSFULL ****");
-
-			jdbcTemplate.update(deletePartyContactMech, paramMap);
-			LOGGER.info("**** delete from PARTY_CONTACT_MECHANISM SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteContactMech, paramMap);
-			LOGGER.info("**** delete from CONTACT_MECHANISM SUCCESSFULL ****");
-
-			jdbcTemplate.update(deleteParty, paramMap);
-			LOGGER.info("**** delete from PARTY SUCCESSFULL ****");
-
-		} catch (BadSqlGrammarException e) {
-			e.printStackTrace();
-		}
+		// MapSqlParameterSource paramMap = new
+		// MapSqlParameterSource().addValue(Constants.TRADE_LETTER_ID,
+		// tradeLetterIds);
+		//
+		// try {
+		// List<String> partyIds = jdbcTemplate.queryForList(selectPartyIdByTLId,
+		// paramMap, String.class);
+		// List<String> fileIds = jdbcTemplate.query(selectFileIdTLId, paramMap, (rs,
+		// idx) -> {
+		// return rs.getString(Constants.FILE_ID);
+		// });
+		// List<String> adminIds = jdbcTemplate.queryForList(selectAdminIdByTLId,
+		// paramMap, String.class);
+		//
+		// paramMap.addValue(Constants.ADMIN_ID, adminIds);
+		// List<String> adminPartyIds =
+		// jdbcTemplate.queryForList(selectAdminPartyIdByAId, paramMap, String.class);
+		//
+		// paramMap.addValue(Constants.PARTY_ID, partyIds);
+		// paramMap.addValue(Constants.ADMIN_PARTY_ID, adminPartyIds);
+		// List<String> addressIds = jdbcTemplate.queryForList(selectAddressIdByPId,
+		// paramMap, String.class);
+		// List<String> contactIds = jdbcTemplate.queryForList(selectContactIdByPId,
+		// paramMap, String.class);
+		//
+		// paramMap.addValue(Constants.FILE_ID, fileIds);
+		// paramMap.addValue(Constants.ADDRESS_ID, addressIds);
+		// paramMap.addValue(Constants.CONTACT_ID, contactIds);
+		//
+		// jdbcTemplate.update(deleteTLAcctGroup, paramMap);
+		// LOGGER.info("**** delete from TL_ACCT_GROUP SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteTLSchedule, paramMap);
+		// LOGGER.info("**** delete from TL_SCHEDULE SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteAEFileRecipient, paramMap);
+		// LOGGER.info("**** delete from AE_FILE_RECIPIENT SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteAEFile, paramMap);
+		// LOGGER.info("**** delete from AE_FILE SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteTLDeliveryMethod, paramMap);
+		// LOGGER.info("**** delete from TL_DELIVERY_METHOD SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteTLExcludeSecType, paramMap);
+		// LOGGER.info("**** delete from TL_EXCLUDE_SEC_TYPE SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteTradeLetter, paramMap);
+		// LOGGER.info("**** delete from TRADE_LETTER SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deletePartyAddress, paramMap);
+		// LOGGER.info("**** delete from PARTY_ADDRESS SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteAddress, paramMap);
+		// LOGGER.info("**** delete from ADDRESS SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deletePartyContactMech, paramMap);
+		// LOGGER.info("**** delete from PARTY_CONTACT_MECHANISM SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteContactMech, paramMap);
+		// LOGGER.info("**** delete from CONTACT_MECHANISM SUCCESSFULL ****");
+		//
+		// jdbcTemplate.update(deleteParty, paramMap);
+		// LOGGER.info("**** delete from PARTY SUCCESSFULL ****");
+		//
+		// } catch (BadSqlGrammarException e) {
+		// e.printStackTrace();
+		// }
 	}
 
 }
