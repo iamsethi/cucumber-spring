@@ -22,15 +22,6 @@
 		</property>
 	</bean>
 
-	<bean id="TletIdrDAO" class="com.wellmanage.database.TletIdrDao">
-		<property name="dataSource" ref="TletIDRDataSource" />
-	</bean>
-	<bean id="TletIDRDataSource" class="org.apache.commons.dbcp.BasicDataSource"
-		destroy-method="close">
-		<property name="driverClassName" value="${database.driver}" />
-		<property name="url" value="${idr.db.url}" />
-		<property name="username" value="${idr.db.username}" />
-		<property name="password" value="${idr.db.password}" />
-	</bean>
+	
 
 </beans>

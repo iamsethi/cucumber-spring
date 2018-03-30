@@ -1,6 +1,6 @@
 Feature: Verify end to end functionality of Trade letters
 
-  @test @stage @regression
+  @test @stage1 @regression
   Scenario: Verify add,search,update and delete functionality of Trade letters
     Given User navigates to IAPortal
     When User clicks on "Trade Letter" URL

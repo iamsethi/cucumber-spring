@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -51,8 +52,7 @@ public class SeleniumLib {
 	public static String parentWindowHandle = null;
 	public static String childWindowHandle = null;
 	public static String downloadFilepath = null;
-	// private static final Logger LOGGER =
-	// Logger.getLogger(SeleniumLib.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(SeleniumLib.class.getName());
 
 	public static void startSSLSelenium(String serverUrl, String node, String downloadLocation)
 			throws MalformedURLException {
@@ -128,6 +128,7 @@ public class SeleniumLib {
 			cap.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
 		}
 
+		LOGGER.info("#####" + node + "####");
 		driver = new RemoteWebDriver(new URL(node), cap);
 		driver.manage().window().setPosition(new Point(0, 0));
 		driver.manage().window().maximize();
