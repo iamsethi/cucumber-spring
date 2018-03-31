@@ -1,5 +1,7 @@
 package com.wellmanage.jira;
 
+import static io.restassured.RestAssured.given;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,9 +13,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,12 +30,9 @@ import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Subtask;
-import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
-import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.LinkIssuesInput;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.atlassian.util.concurrent.Promise;
-import com.jayway.jsonpath.JsonPath;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -43,6 +40,9 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import cucumber.runtime.model.CucumberScenario;
 import gherkin.formatter.model.Step;
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 
 @Service
 public class JiraIntegration {
@@ -115,14 +115,16 @@ public class JiraIntegration {
 	JiraMapping jiraMapping = new JiraMapping();
 	public static String newline = System.getProperty("line.separator");
 
-	public void jiraMap(Collection<String> tags, CucumberScenario cubScenario, String scnStatus) throws IOException, URISyntaxException {
+	public void jiraMap(Collection<String> tags, CucumberScenario cubScenario, String scnStatus)
+			throws IOException, URISyntaxException {
 		if (jiraintegrationmode.equalsIgnoreCase("ON")) {
 			this.tags = tags;
 			this.testName = cubScenario.getGherkinModel().getName().toString().replaceAll("\\s+", "_") + "_"
 					+ cubScenario.getVisualName().replaceAll("\\W", "");
 			this.testStatus = (TestStatus.valueOf(scnStatus)).getStatus();
 			StringBuilder sceDetails = new StringBuilder();
-			String sceOutline = (cubScenario.getGherkinModel().getKeyword().toString() + ":" + " " + cubScenario.getGherkinModel().getName());
+			String sceOutline = (cubScenario.getGherkinModel().getKeyword().toString() + ":" + " "
+					+ cubScenario.getGherkinModel().getName());
 			List<Step> step = cubScenario.getSteps();
 			sceDetails.append(sceOutline);
 			for (Step stp : step) {
@@ -157,8 +159,8 @@ public class JiraIntegration {
 	}
 
 	private void storyKeyInsertStore() throws IOException, URISyntaxException {
-		if (StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true).filter(s -> s.getSummary().contains(subtask_key)).findFirst()
-				.isPresent()) {
+		if (StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true)
+				.filter(s -> s.getSummary().contains(subtask_key)).findFirst().isPresent()) {
 			Subtask subtask = StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true)
 					.filter(s -> s.getSummary().contains(subtask_key)).findFirst().get();
 			this.subTaskId = subtask.getIssueKey();
@@ -179,8 +181,8 @@ public class JiraIntegration {
 
 	private void storyKeyUpdateStore() throws IOException, URISyntaxException {
 		jiraMapping = jiraMapping(getJiraStore(this.scenarioName));
-		if (StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true).filter(s -> s.getSummary().contains(subtask_key)).findFirst()
-				.isPresent()) {
+		if (StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true)
+				.filter(s -> s.getSummary().contains(subtask_key)).findFirst().isPresent()) {
 			Subtask subtask = StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true)
 					.filter(s -> s.getSummary().contains(subtask_key)).findFirst().get();
 			this.subTaskId = subtask.getIssueKey();
@@ -199,7 +201,6 @@ public class JiraIntegration {
 	private void flowCycleCreationWithStory() throws IOException, URISyntaxException {
 		createJiraTest(this.testName);
 		linkStory(this.subTaskId, this.testId);
-		addTestDescription(this.testId, this.testScenDesc);
 		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
 		addTestsToCycle(testId, this.cycleId);
 		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
@@ -214,7 +215,6 @@ public class JiraIntegration {
 			this.testId = updateTestId();
 		}
 		linkStory(this.subTaskId, this.testId);
-		addTestDescription(this.testId, this.testScenDesc);
 		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
 		addTestsToCycle(testId, this.cycleId);
 		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
@@ -242,7 +242,6 @@ public class JiraIntegration {
 
 	private void flowCycleCreationWithoutStory() throws URISyntaxException, IOException {
 		createJiraTest(this.testName);
-		addTestDescription(this.testId, this.testScenDesc);
 		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
 		addTestsToCycle(testId, this.cycleId);
 		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
@@ -256,7 +255,6 @@ public class JiraIntegration {
 		} else {
 			this.testId = updateTestId();
 		}
-		addTestDescription(this.testId, this.testScenDesc);
 		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
 		addTestsToCycle(testId, this.cycleId);
 		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
@@ -267,7 +265,8 @@ public class JiraIntegration {
 		final JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
 		final URI uri = new URI(jira_url);
 		final Issue issue;
-		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(uri, username, new String(Base64.getDecoder().decode(password)));
+		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(uri, username,
+				new String(Base64.getDecoder().decode(password)));
 		try {
 			final Promise<Issue> promiseIssue = restClient.getIssueClient().getIssue(Id);
 			issue = promiseIssue.claim();
@@ -280,9 +279,13 @@ public class JiraIntegration {
 	private void linkStory(String issueId, String testId) throws IOException, URISyntaxException {
 		final JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
 		final URI uri = new URI(jira_url);
-		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(uri, username, new String(Base64.getDecoder().decode(password)));
+		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(uri, username,
+				new String(Base64.getDecoder().decode(password)));
 		try {
-			restClient.getIssueClient().linkIssue(new LinkIssuesInput(issueId, testId, "Depends", Comment.valueOf(testId + "test Id added"))).claim();
+			restClient.getIssueClient()
+					.linkIssue(
+							new LinkIssuesInput(issueId, testId, "Depends", Comment.valueOf(testId + "test Id added")))
+					.claim();
 		} finally {
 			restClient.close();
 		}
@@ -299,7 +302,8 @@ public class JiraIntegration {
 	}
 
 	private void updateJiraStore(String strOrginal, String strNew) throws IOException {
-		List<String> replaced = Files.lines(Paths.get(store_path)).map(line -> line.replace(strOrginal, strNew)).collect(Collectors.toList());
+		List<String> replaced = Files.lines(Paths.get(store_path)).map(line -> line.replace(strOrginal, strNew))
+				.collect(Collectors.toList());
 		Files.write(Paths.get(store_path), replaced);
 	}
 
@@ -367,7 +371,9 @@ public class JiraIntegration {
 	private void updateStoreCycleKey(String strNew) throws IOException {
 		Stream<String> lines = Files.lines(Paths.get(cycle_path));
 		List<String> replaced = Files.lines(Paths.get(cycle_path))
-				.map(line -> line.replace(lines.parallel().filter(s -> s.startsWith("cycleId" + "=")).findFirst().get().toString(), strNew))
+				.map(line -> line.replace(
+						lines.parallel().filter(s -> s.startsWith("cycleId" + "=")).findFirst().get().toString(),
+						strNew))
 				.collect(Collectors.toList());
 		Files.write(Paths.get(cycle_path), replaced);
 		lines.close();
@@ -386,15 +392,16 @@ public class JiraIntegration {
 
 	private void creatZephyrCycle(String env, String cycleName, String desc) throws IOException {
 		String url = this.jira_url + "rest/zapi/latest/cycle";
-		String input = "{  \"clonedCycleId\": \"\",  \"name\": \"" + cycleName + "\",  \"build\": \"\",  \"environment\": \"" + env + "\", "
-				+ " \"description\": \"" + desc + "\",  \"startDate\":  \"" + startCycleDate + "\",  \"endDate\":  \"" + endCycleDate + "\",  "
+		String input = "{  \"clonedCycleId\": \"\",  \"name\": \"" + cycleName
+				+ "\",  \"build\": \"\",  \"environment\": \"" + env + "\", " + " \"description\": \"" + desc
+				+ "\",  \"startDate\":  \"" + startCycleDate + "\",  \"endDate\":  \"" + endCycleDate + "\",  "
 				+ "\"projectId\": \"" + this.projectId + "\",\"versionId\": \"-1\"}";
 		Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(username, new String(Base64.getDecoder().decode(password))));
 		WebResource webResource = client.resource(url);
 		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);
-		this.cycleId = JsonPath.read(response.getEntity(String.class), "id");
-		updateStoreCycleKey("cycleId=" + this.cycleId);
+		// this.cycleId = JsonPath.read(response.getEntity(String.class), "id");
+		// updateStoreCycleKey("cycleId=" + this.cycleId);
 	}
 
 	private String getZephyrCycle() {
@@ -403,24 +410,41 @@ public class JiraIntegration {
 		client.addFilter(new HTTPBasicAuthFilter(username, new String(Base64.getDecoder().decode(password))));
 		WebResource webResource = client.resource(url);
 		ClientResponse response = webResource.type("application/json").get(ClientResponse.class);
-		return JsonPath.read(response.getEntity(String.class), "name");
+		// return JsonPath.read(response.getEntity(String.class), "name");
+		return "";
 	}
 
 	private void createJiraTest(String testCaseName) {
-		String urlString = this.jira_url + "rest/api/2/issue/";
+		String urlPost = this.jira_url + "rest/api/2/issue/";
 		String description = "test Created";
-		String urlPayload = "{ \"fields\":{\"project\":{\"key\": \"" + project_key + "\"}, \"summary\": \"" + testCaseName + "\", " + "\"description\": \""
-				+ description + "\",\"issuetype\": {\"name\": \"Test\"}} }";
-		Client client = Client.create();
-		client.addFilter(new HTTPBasicAuthFilter(username, new String(Base64.getDecoder().decode(password))));
-		WebResource webResource = client.resource(urlString);
-		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, urlPayload);
-		this.testId = JsonPath.read(response.getEntity(String.class), "key");
+		String issueType = "Bug";
+		String urlPayload = "{\"fields\":{\"project\":{\"key\":\"" + project_key + "\"},\"summary\":\"" + testCaseName
+				+ "\",\"description\":\"Creating of an issue using project keys and issue type names using the REST API\",\"issuetype\":{\"name\":\""
+				+ issueType + "\"}}}";
+		RestAssured.baseURI = this.jira_url;
+		Response res = given().header("Content-Type", "application/json")
+				.body("{ \"username\": \"tletuser\", \"password\": \"letuser\" }").when().post(urlPost).then()
+				.statusCode(200).extract().response();
+		String responseString = res.asString();
+		JsonPath js = new JsonPath(responseString);
+		String session = js.get("session.value");
+
+		LOGGER.info("####" + session + "####");
+
+		Response res2 = given().header("Content-Type", "application/json").header("Cookie", "JSESSIONID=" + session)
+				.body(urlPayload).when().post("rest/api/2/issue/").then().extract().response();
+
+		LOGGER.info("####" + res2.asString() + "####");
+		String responseString2 = res2.asString();
+		JsonPath js2 = new JsonPath(responseString2);
+		this.testId = js2.get("key");
+
 	}
 
 	private void addTestsToCycle(String testCaseKey, String cycleId) {
-		String urlPayload = "{ \"issues\": [\"" + testCaseKey + "\"], \"versionId\": \"" + this.versionId + "\", \"cycleId\": \"" + cycleId
-				+ "\", \"projectId\": \"" + this.projectId + "\", \"method\": \"1\" }";
+		String urlPayload = "{ \"issues\": [\"" + testCaseKey + "\"], \"versionId\": \"" + this.versionId
+				+ "\", \"cycleId\": \"" + cycleId + "\", \"projectId\": \"" + this.projectId
+				+ "\", \"method\": \"1\" }";
 		String urlString = this.jira_url + "rest/zapi/latest/execution/addTestsToCycle/";
 		LOGGER.info("URL:->" + urlString + "\nPayload:->" + urlPayload);
 		Client client = Client.create();
@@ -429,16 +453,17 @@ public class JiraIntegration {
 	}
 
 	private void createExecutionId(String testCaseId, String cycleId) {
-		String urlPayload = "{ \"versionId\": \"" + this.versionId + "\", \"cycleId\": \"" + cycleId + "\", \"projectId\": \"" + this.projectId
-				+ "\", \"issueId\": \"" + testCaseId + "\" }";
+		String urlPayload = "{ \"versionId\": \"" + this.versionId + "\", \"cycleId\": \"" + cycleId
+				+ "\", \"projectId\": \"" + this.projectId + "\", \"issueId\": \"" + testCaseId + "\" }";
 		String urlString = this.jira_url + "rest/zapi/latest/execution";
 		LOGGER.info("URL:->" + urlString + "\nPayload:->" + urlPayload);
 		Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(this.username, new String(Base64.getDecoder().decode(password))));
 		WebResource webResource = client.resource(urlString);
 		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, urlPayload);
-		List<Integer> issueIds = JsonPath.read(response.getEntity(String.class), "$.[*].id");
-		this.executionId = issueIds.get(0).toString();
+		// List<Integer> issueIds = JsonPath.read(response.getEntity(String.class),
+		// "$.[*].id");
+		// this.executionId = issueIds.get(0).toString();
 	}
 
 	private void updateExecution(String executionId, int updateStatus) {
@@ -452,17 +477,4 @@ public class JiraIntegration {
 		client.resource(urlString).type("application/json").put(ClientResponse.class, urlPayloadNew);
 	}
 
-	private void addTestDescription(String testId, String desc) throws URISyntaxException, IOException {
-		final JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
-		final URI uri = new URI(jira_url);
-		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(uri, this.username, new String(Base64.getDecoder().decode(password)));
-		try {
-			Map<String, FieldInput> fields = new HashMap<String, FieldInput>();
-			fields.put("description", new FieldInput("description", desc));
-			IssueInput issuein = new IssueInput(fields);
-			restClient.getIssueClient().updateIssue(testId, issuein).claim();
-		} finally {
-			restClient.close();
-		}
-	}
 }
