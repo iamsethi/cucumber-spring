@@ -121,23 +121,9 @@ public class JiraIntegration {
 	public void jiraMap(Collection<String> tags, CucumberScenario cubScenario, String scnStatus)
 			throws IOException, URISyntaxException {
 		if (jiraintegrationmode.equalsIgnoreCase("ON")) {
-			this.tags = tags;
-			this.testName = cubScenario.getGherkinModel().getName().toString().replaceAll("\\s+", "_") + "_"
-					+ cubScenario.getVisualName().replaceAll("\\W", "");
-			this.testStatus = (TestStatus.valueOf(scnStatus)).getStatus();
-			StringBuilder sceDetails = new StringBuilder();
-			String sceOutline = (cubScenario.getGherkinModel().getKeyword().toString() + ":" + " "
-					+ cubScenario.getGherkinModel().getName());
-			List<Step> step = cubScenario.getSteps();
-			sceDetails.append(sceOutline);
-			for (Step stp : step) {
-				String tp = (stp.getKeyword().toString() + stp.getName().toString());
-				sceDetails.append(newline);
-				sceDetails.append(tp);
-			}
-			this.testScenDesc = sceDetails.toString();
-			scenarioExecutionDetails();
+			createJiraTest(this.testName);
 		}
+
 	}
 
 	public void scenarioExecutionDetails() throws IOException, URISyntaxException {
@@ -245,7 +231,7 @@ public class JiraIntegration {
 
 	private void flowCycleCreationWithoutStory() throws URISyntaxException, IOException {
 		createJiraTest(this.testName);
-		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
+		// creatCycle(this.environment, this.currentCycleName, this.cycledesc);
 		// addTestsToCycle(testId, this.cycleId);
 		// createExecutionId(getJiraIssueType(this.testId).getId().toString(),
 		// this.cycleId);
@@ -424,29 +410,25 @@ public class JiraIntegration {
 	}
 
 	private void createJiraTest(String testCaseName) {
-
-		String issueType = "Bug";
-
-		RestAssured.baseURI = this.jira_url;
-		Response res = RestAssured.given().header("Content-Type", "application/json")
-				.body("{ \"username\": \"tletuser\", \"password\": \"letuser\" }").when().post("rest/auth/1/session/")
+		RestAssured.baseURI = "http://localhost:8090";
+		Response res = given().header("Content-Type", "application/json")
+				.body("{ \"username\": \"tletuser\", \"password\": \"letuser\" }").when().post("/rest/auth/1/session")
 				.then().assertThat().statusCode(200).extract().response();
+
 		String responseString = res.asString();
 
 		JsonPath js = new JsonPath(responseString);
-		this.sessionId = js.get("session.value");
-
-		String urlPayload = "{\"fields\":{\"project\":{\"key\":\"" + project_key + "\"},\"summary\":\"" + testCaseName
-				+ "\",\"description\":\"Creating of an issue using project keys and issue type names using the REST API\",\"issuetype\":{\"name\":\""
-				+ issueType + "\"}}}";
+		String sessionId = js.get("session.value");
 
 		Response res2 = given().header("Content-Type", "application/json").header("Cookie", "JSESSIONID=" + sessionId)
-				.body(urlPayload).when().post("rest/api/2/issue/").then().assertThat().statusCode(200).extract()
-				.response();
+				.body("{\"fields\":{\"project\":{\"key\":\"TRAD\"},\"summary\":\"REST ye merry gentlemen.\",\"description\":\"Creating of an issue using project keys and issue type names using the REST API\",\"issuetype\":{\"name\":\"Bug\"}}}")
+				.when().post("rest/api/2/issue/").then().assertThat().statusCode(201).extract().response();
 
 		String responseString2 = res2.asString();
 		JsonPath js2 = new JsonPath(responseString2);
 		this.testId = js2.get("key");
+
+		LOGGER.info("###>>>>>>>>>" + this.testId + "###");
 
 	}
 
