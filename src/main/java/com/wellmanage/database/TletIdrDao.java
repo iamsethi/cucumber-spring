@@ -111,6 +111,15 @@ public class TletIdrDao {
 	}
 
 	public void deleteTradeLetter(List<String> tradeLetterIds) {
+		
+		
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue(Constants.APP_USER, impersonateUser);
+		parameters.addValue(Constants.BRKR_INSTX_ID, brkrInstxId);
+		jdbcTemplate.update(updtStgCAI, parameters);
+		LOGGER.info("###Broker Cash Agent Information approved successfully from Live table for Broker Instx ID : "
+				+ brkrInstxId);
+	
 
 		// MapSqlParameterSource paramMap = new
 		// MapSqlParameterSource().addValue(Constants.TRADE_LETTER_ID,
