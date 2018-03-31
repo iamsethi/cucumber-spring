@@ -1,0 +1,13 @@
+Thanks for your interest in Zephyr.Yes, to create a test you need to follow the "Creat Issue" API in Jira as basically test is an issue type 
+
+Kindly follow the link below
+
+https://developer.atlassian.com/jiradev/jira-apis/jira-rest-apis/jira-rest-api-tutorials/jira-rest-api-example-create-issue
+
+After creating test issue you can use our various API resources to proceed with any of your automation needs too
+
+http://docs.getzephyr.apiary.io/
+
+I believe you are using our Zephyr for Jira plugin product.If you need to make use of our APIs listed in the link above you need to install our product ZAPI too
+
+https://zephyrdocs.atlassian.net/wiki/display/DEVELOPER/ZAPI

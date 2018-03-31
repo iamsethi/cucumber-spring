@@ -1,4 +1,4 @@
-mvn clean install -Denvironment=stage -Dcucumber.options="--tags @stage" -Dusername=ketan -Dbrowser=chrome
+mvn clean install -Denvironment=stage -Dcucumber.options="--tags @stage1" -Dusername=ketan -Dbrowser=chrome
 
 mvn install:install-file -Dfile=ojdbc6.jar -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.3 -Dp
 ackaging=jar -DgeneratePom=true

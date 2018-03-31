@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -113,6 +114,8 @@ public class JiraIntegration {
 	private int testStatus = 3;
 
 	JiraMapping jiraMapping = new JiraMapping();
+
+	private String sessionId;
 	public static String newline = System.getProperty("line.separator");
 
 	public void jiraMap(Collection<String> tags, CucumberScenario cubScenario, String scnStatus)
@@ -243,9 +246,10 @@ public class JiraIntegration {
 	private void flowCycleCreationWithoutStory() throws URISyntaxException, IOException {
 		createJiraTest(this.testName);
 		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
-		addTestsToCycle(testId, this.cycleId);
-		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
-		updateExecution(executionId, this.testStatus);
+		// addTestsToCycle(testId, this.cycleId);
+		// createExecutionId(getJiraIssueType(this.testId).getId().toString(),
+		// this.cycleId);
+		// updateExecution(executionId, this.testStatus);
 	}
 
 	private void flowCycleUpdateWithoutStory() throws URISyntaxException, IOException {
@@ -391,17 +395,22 @@ public class JiraIntegration {
 	}
 
 	private void creatZephyrCycle(String env, String cycleName, String desc) throws IOException {
-		String url = this.jira_url + "rest/zapi/latest/cycle";
-		String input = "{  \"clonedCycleId\": \"\",  \"name\": \"" + cycleName
+		String urlPost = "rest/zapi/latest/cycle/";
+		String input2 = "{  \"clonedCycleId\": \"\",  \"name\": \"" + cycleName
 				+ "\",  \"build\": \"\",  \"environment\": \"" + env + "\", " + " \"description\": \"" + desc
 				+ "\",  \"startDate\":  \"" + startCycleDate + "\",  \"endDate\":  \"" + endCycleDate + "\",  "
 				+ "\"projectId\": \"" + this.projectId + "\",\"versionId\": \"-1\"}";
-		Client client = Client.create();
-		client.addFilter(new HTTPBasicAuthFilter(username, new String(Base64.getDecoder().decode(password))));
-		WebResource webResource = client.resource(url);
-		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);
-		// this.cycleId = JsonPath.read(response.getEntity(String.class), "id");
-		// updateStoreCycleKey("cycleId=" + this.cycleId);
+
+		String input = "{\"clonedCycleId\":\"\",\"name\":\"" + cycleName + "\",\"build\":\"\",\"environment\":\"" + env
+				+ "\",\"description\":\"" + desc + "\",\"startDate\":\"" + startCycleDate + "\",\"endDate\":\""
+				+ endCycleDate + "\",\"projectId\":\"" + this.projectId + "\",\"versionId\":\"-1\"}";
+		RestAssured.baseURI = this.jira_url;
+		Response res = given().header("Content-Type", "application/json").header("Cookie", this.sessionId).body(input)
+				.when().post(urlPost).then().statusCode(200).extract().response();
+		String responseString = res.asString();
+		JsonPath js = new JsonPath(responseString);
+		this.cycleId = js.get("id");
+		updateStoreCycleKey("cycleId=" + this.cycleId);
 	}
 
 	private String getZephyrCycle() {
@@ -415,26 +424,26 @@ public class JiraIntegration {
 	}
 
 	private void createJiraTest(String testCaseName) {
-		String urlPost = this.jira_url + "rest/api/2/issue/";
-		String description = "test Created";
+
 		String issueType = "Bug";
+
+		RestAssured.baseURI = this.jira_url;
+		Response res = RestAssured.given().header("Content-Type", "application/json")
+				.body("{ \"username\": \"tletuser\", \"password\": \"letuser\" }").when().post("rest/auth/1/session/")
+				.then().assertThat().statusCode(200).extract().response();
+		String responseString = res.asString();
+
+		JsonPath js = new JsonPath(responseString);
+		this.sessionId = js.get("session.value");
+
 		String urlPayload = "{\"fields\":{\"project\":{\"key\":\"" + project_key + "\"},\"summary\":\"" + testCaseName
 				+ "\",\"description\":\"Creating of an issue using project keys and issue type names using the REST API\",\"issuetype\":{\"name\":\""
 				+ issueType + "\"}}}";
-		RestAssured.baseURI = this.jira_url;
-		Response res = given().header("Content-Type", "application/json")
-				.body("{ \"username\": \"tletuser\", \"password\": \"letuser\" }").when().post(urlPost).then()
-				.statusCode(200).extract().response();
-		String responseString = res.asString();
-		JsonPath js = new JsonPath(responseString);
-		String session = js.get("session.value");
 
-		LOGGER.info("####" + session + "####");
+		Response res2 = given().header("Content-Type", "application/json").header("Cookie", "JSESSIONID=" + sessionId)
+				.body(urlPayload).when().post("rest/api/2/issue/").then().assertThat().statusCode(200).extract()
+				.response();
 
-		Response res2 = given().header("Content-Type", "application/json").header("Cookie", "JSESSIONID=" + session)
-				.body(urlPayload).when().post("rest/api/2/issue/").then().extract().response();
-
-		LOGGER.info("####" + res2.asString() + "####");
 		String responseString2 = res2.asString();
 		JsonPath js2 = new JsonPath(responseString2);
 		this.testId = js2.get("key");
