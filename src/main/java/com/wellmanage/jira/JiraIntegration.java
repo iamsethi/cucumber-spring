@@ -1,87 +1,468 @@
 package com.wellmanage.jira;
 
-import com.google.common.base.Function;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-/**
- * This is the Object repository for all the Locators.
- * 
- * @author ksethi
- * 
- */
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.Subtask;
+import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
+import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
+import com.atlassian.jira.rest.client.api.domain.input.LinkIssuesInput;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import com.atlassian.util.concurrent.Promise;
+import com.jayway.jsonpath.JsonPath;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+
+import cucumber.runtime.model.CucumberScenario;
+import gherkin.formatter.model.Step;
+
+@Service
 public class JiraIntegration {
 
-	public static final String xpthMenuFrame = "//*[@id='csw_menuspace']/frame[1]";
-	public static final String xpthPortalLink = "//a[text()='IA Portal']";
-	public static final String xpthTCSFrame = "//*[@id=\"csw_menuspace\"]/frame[2]";
-	public static final String xpthAddNew = "//i[@class='fa fa-plus']";
-	public static final String xpthIncludeSign = "//label[starts-with(text(), ' Include')]";
-	public static final String xpthSaveBtn = "//button[contains(text(),'Save')]";
-	public static final String xpthContactName = "//input[contains(@formcontrolname,'contactName')]";
-	public static final String xpthId = "//input[@placeholder='Search...']";
-	public static final String xpthAccSrch = "//input[@placeholder='Search...']";
-	public static final String xpthCbx = "//input[contains(@type,'checkbox')]";
-	public static final String xpthAdmin = "//select[contains(@formcontrolname,'admin')]";
-	public static final String xpthAddNewSuccess = "//p[@class='text-success']";
-	public static final String xpthSrchRsltErr = "//p[@class='text-danger']";
-	public static final String xpthUnchkAll = "//a[contains(text(),' Uncheck all')]";
-	public static final String xpthFrmDt = "//label[text()='Created From Date']//ancestor::div[1]//span";
-	public static final String xpthDtTdy = "//span[text()='Today']";
-	public static final String xpthToDt = "//label[text()='Created To Date']//ancestor::div[1]//span";
-	public static final String xpthSrtTL = "//div[@class='ag-cell-label-container ag-header-cell-sorted-asc']";
-	public static final String xpthSrtStatus = "//span[text()='Status']";
-	public static final String xpthSrch = "//button[text()='Search']";
-	public static final String xpthLblGridResult = "//span[contains(text(),'record')]";
-	public static final String xpthLblTLId = "//span[@class='ag-group-value']";
-	public static final String xpthRcntTL = "//div[@class='ag-body-container']//div[2]//span[@ref='eValue']";
-	public static final String xpthExpndTL = "//div[@class='ag-body-container']/div[position()=last()]//div[2]//span[@ref='eContracted']";
-	public static final String xpthUpdtBtn = "//button[contains(text(),'Update')]";
-	public static final String xpthClr = "//button[contains(text(),'Clear')]";
-	public static final String xpthEdtIcn = "//div[@class='ag-body-container']/div[position()=last()]//div[7]//a";
-	public static final String xpthDltIcn = "//div[@class='ag-body-container']/div[position()=last()]//div[7]//a[2]";
-	public static final String xpthCopyIcn = "//div[@class='ag-body-container']/div[position()=last()]//div[7]//a[3]";
-	public static final String xpthDltBtn = "//h4[text()='Confirm Delete']/ancestor::div[1]/following-sibling::div[2]//button[contains(text(),'Delete')]";
-	public static final String xpthTLcbx = "//div[@class='ag-body-container']/div[position()=last()]//div";
-	public static final String xpthDlvrSlctd = "//button[contains(@data-target,'#deliverModal')]";
-	public static final String xpthDlvrFrmDt = "(//div[@role='gridcell' and @col-id='createdFromDate'])[2]";
-	public static final String xpthDlvrToDt = "//div[@role='gridcell' and @col-id='createdToDate']";
-	public static final String xpthDlvrStatus = "//div[@role='gridcell' and @col-id='createdToDate']/ancestor::div[@class='modal-content']//button[@class='btn btn-danger']";
-	public static final String xpthTLId = "//div[@class='ag-body-container']/div[position()=last()]//div[2]//span[@ref='eValue']";
-	public static final String xpthDlvrDtTdy = "//td[@class=' ui-datepicker-days-cell-over  ui-datepicker-today']";
-	public static final String xpthOnDmnd = "//a[text()='On Demand']";
-	public static final String xpthDlvrScrn = "//h4[text()='Deliver']";
-	public static final String xpthOnDmndFrmDt = "//button[@aria-label='Open Calendar']";
-	public static final String xpthOnDmndToDt = "(//button[@aria-label='Open Calendar'])[2]";
-	public static final String xpthOnDmndTLId = "//input[@placeholder='Enter Trade Letter ID..']";
-	public static final String xpthCrtdFrmDt = "//label[text()='Created From Date']/following-sibling::div//input";
-	public static final String xpthCrtToDt = "	//label[text()='Created To Date']/following-sibling::div//input";
-	public static final String xpthDlvrBtn = "//button[contains(text(),'Deliver')]";
-	public static final String xpthPreview = "//button[contains(text(),'Preview in ER')]";
-	public static final String xpthERScrn = "//span[@class='nav-title']";
-	public static final String xpthOvrrideSSL = "javascript:document.getElementById('overridelink').click()";
+	private static final Logger LOGGER = Logger.getLogger(JiraIntegration.class.getName());
 
-	public static Function<String, String> getXpthOptionType = (optionName) -> "//label[starts-with(text(), ' "
-			+ optionName + "')]/following-sibling::div";
+	@Value("${jira.jira_url}")
+	private String jira_url;
 
-	public static Function<String, String> getXpthTxtInfo = (info) -> "//input[contains(@formcontrolname,'" + info
-			+ "')]";
+	@Value("${jira.store_path}")
+	private String store_path;
 
-	public static Function<String, String> getXpthSrch = (input) -> "//input[contains(@placeholder,'Enter " + input
-			+ "')]";
+	@Value("${jira.cycle_path}")
+	private String cycle_path;
 
-	public static Function<String, String> getXpthDrpDwn = (info) -> "//label[@for='" + info
-			+ "']/following-sibling::div//button[@class='dropdown-toggle btn btn-default btn-block']";
+	@Value("${jira.story_key}")
+	private String story_key;
 
-	public static Function<String, String> getXpthTypeAhead = (
-			suggestion) -> "//span[@class='completer-list-item match' and text()='" + suggestion + "']";
+	@Value("${jira.subtask_key}")
+	private String subtask_key;
 
-	public static Function<String, String> getGridCell = (
-			colName) -> "//div[@class='ag-body-container']/div[position()=last()]//div[@role='gridcell' and contains(@col-id,'"
-					+ colName + "')]";
+	@Value("${jira.project_key}")
+	private String project_key;
 
-	public static Function<String, String> getCrtdDt = (label) -> "//label[text()='" + label
-			+ "']/following-sibling::div//input";
+	@Value("${jira.versionId}")
+	private String versionId;
 
-	public static Function<String, String> getOpenCalendar = (label) -> "//label[text()='" + label
-			+ "']//ancestor::div[1]//span";
+	@Value("${jira.projectId}")
+	private String projectId;
 
+	@Value("${jira.jiraintegrationmode}")
+	private String jiraintegrationmode;
+
+	@Value("${jira.environment}")
+	private String environment;
+
+	@Value("${jira.nextRelease}")
+	private String nextRelease;
+
+	@Value("${jira.currentcyclename}")
+	private String currentCycleName;
+
+	@Value("${jira.cycledesc}")
+	private String cycledesc;
+
+	@Value("${jira.username}")
+	private String username;
+
+	@Value("${jira.password}")
+	private String password;
+
+	@Value("${jira.startcycledate}")
+	private String startCycleDate;
+
+	@Value("${jira.endcycledate}")
+	private String endCycleDate;
+
+	private String testName = null;
+	private String cycleId = null;
+	private String executionId = null;
+	private String testId = null;
+	private String testScenDesc = null;
+	private String storyId = null;
+	private String subTaskId = null;
+	private String scenarioName = null;
+	private Collection<String> tags = null;
+	private String storeScenaioDetail = null;
+	private int testStatus = 3;
+
+	JiraMapping jiraMapping = new JiraMapping();
+	public static String newline = System.getProperty("line.separator");
+
+	public void jiraMap(Collection<String> tags, CucumberScenario cubScenario, String scnStatus) throws IOException, URISyntaxException {
+		if (jiraintegrationmode.equalsIgnoreCase("ON")) {
+			this.tags = tags;
+			this.testName = cubScenario.getGherkinModel().getName().toString().replaceAll("\\s+", "_") + "_"
+					+ cubScenario.getVisualName().replaceAll("\\W", "");
+			this.testStatus = (TestStatus.valueOf(scnStatus)).getStatus();
+			StringBuilder sceDetails = new StringBuilder();
+			String sceOutline = (cubScenario.getGherkinModel().getKeyword().toString() + ":" + " " + cubScenario.getGherkinModel().getName());
+			List<Step> step = cubScenario.getSteps();
+			sceDetails.append(sceOutline);
+			for (Step stp : step) {
+				String tp = (stp.getKeyword().toString() + stp.getName().toString());
+				sceDetails.append(newline);
+				sceDetails.append(tp);
+			}
+			this.testScenDesc = sceDetails.toString();
+			scenarioExecutionDetails();
+		}
+	}
+
+	public void scenarioExecutionDetails() throws IOException, URISyntaxException {
+		if (tags.stream().filter(s -> !s.startsWith(story_key)).findFirst().isPresent()) {
+			this.scenarioName = tags.stream().filter(s -> !s.startsWith(story_key)).findFirst().get();
+		}
+		if (tags.stream().filter(s -> s.startsWith(story_key)).findFirst().isPresent()) {
+			withStoryKey();
+		} else {
+			withoutStoryKey();
+		}
+	}
+
+	private void withStoryKey() throws IOException, URISyntaxException {
+		this.storyId = tags.stream().filter(s -> s.startsWith(story_key)).findFirst().get().substring(1);
+		this.storeScenaioDetail = getJiraStore(this.scenarioName);
+		if (StringUtils.isNotBlank(this.storeScenaioDetail)) {
+			storyKeyUpdateStore();
+		} else {
+			storyKeyInsertStore();
+		}
+	}
+
+	private void storyKeyInsertStore() throws IOException, URISyntaxException {
+		if (StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true).filter(s -> s.getSummary().contains(subtask_key)).findFirst()
+				.isPresent()) {
+			Subtask subtask = StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true)
+					.filter(s -> s.getSummary().contains(subtask_key)).findFirst().get();
+			this.subTaskId = subtask.getIssueKey();
+			if (subtask != null) {
+				flowCycleCreationWithStory();
+				List<String> idtests = new ArrayList<String>();
+				idtests.add(this.testId);
+				jiraMapping.setTestID(idtests);
+				jiraMapping.setStoryId(this.storyId);
+				jiraMapping.setScenarioName(this.scenarioName);
+				jiraMapping.setSubTaskId(this.subTaskId);
+				addJiraStore(createRowStore(jiraMapping));
+			}
+		} else {
+			throw new IllegalStateException("SubTask does not exist for Given Story ID" + this.storyId);
+		}
+	}
+
+	private void storyKeyUpdateStore() throws IOException, URISyntaxException {
+		jiraMapping = jiraMapping(getJiraStore(this.scenarioName));
+		if (StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true).filter(s -> s.getSummary().contains(subtask_key)).findFirst()
+				.isPresent()) {
+			Subtask subtask = StreamSupport.stream(getJiraIssueType(storyId).getSubtasks().spliterator(), true)
+					.filter(s -> s.getSummary().contains(subtask_key)).findFirst().get();
+			this.subTaskId = subtask.getIssueKey();
+			if (subtask != null) {
+				flowCycleUpdateWithStory();
+				jiraMapping.setStoryId(this.storyId);
+				jiraMapping.setScenarioName(this.scenarioName);
+				jiraMapping.setSubTaskId(this.subTaskId);
+				updateJiraStore(this.storeScenaioDetail, createRowStore(jiraMapping));
+			}
+		} else {
+			throw new IllegalStateException("SubTask Does Not Exist for Given Story ID" + storyId);
+		}
+	}
+
+	private void flowCycleCreationWithStory() throws IOException, URISyntaxException {
+		createJiraTest(this.testName);
+		linkStory(this.subTaskId, this.testId);
+		addTestDescription(this.testId, this.testScenDesc);
+		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
+		addTestsToCycle(testId, this.cycleId);
+		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
+		updateExecution(executionId, this.testStatus);
+	}
+
+	private void flowCycleUpdateWithStory() throws IOException, URISyntaxException {
+		if (updateTestId() == null) {
+			createJiraTest(this.testName);
+			jiraMapping.getTestID().add(this.testId);
+		} else {
+			this.testId = updateTestId();
+		}
+		linkStory(this.subTaskId, this.testId);
+		addTestDescription(this.testId, this.testScenDesc);
+		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
+		addTestsToCycle(testId, this.cycleId);
+		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
+		updateExecution(executionId, this.testStatus);
+	}
+
+	private void withoutStoryKey() throws IOException, URISyntaxException {
+		if (StringUtils.isBlank(getJiraStore(this.scenarioName))) {
+			flowCycleCreationWithoutStory();
+			List<String> idtests = new ArrayList<String>();
+			idtests.add(this.testId);
+			jiraMapping.setTestID(idtests);
+			jiraMapping.setStoryId(null);
+			jiraMapping.setSubTaskId(null);
+			jiraMapping.setScenarioName(this.scenarioName);
+			addJiraStore(createRowStore(jiraMapping));
+		} else {
+			this.storeScenaioDetail = getJiraStore(this.scenarioName);
+			jiraMapping = jiraMapping(this.storeScenaioDetail);
+			jiraMapping.setScenarioName(this.scenarioName);
+			flowCycleUpdateWithoutStory();
+			updateJiraStore(this.storeScenaioDetail, createRowStore(jiraMapping));
+		}
+	}
+
+	private void flowCycleCreationWithoutStory() throws URISyntaxException, IOException {
+		createJiraTest(this.testName);
+		addTestDescription(this.testId, this.testScenDesc);
+		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
+		addTestsToCycle(testId, this.cycleId);
+		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
+		updateExecution(executionId, this.testStatus);
+	}
+
+	private void flowCycleUpdateWithoutStory() throws URISyntaxException, IOException {
+		if (updateTestId() == null) {
+			createJiraTest(this.testName);
+			jiraMapping.getTestID().add(this.testId);
+		} else {
+			this.testId = updateTestId();
+		}
+		addTestDescription(this.testId, this.testScenDesc);
+		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
+		addTestsToCycle(testId, this.cycleId);
+		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
+		updateExecution(executionId, this.testStatus);
+	}
+
+	private Issue getJiraIssueType(String Id) throws URISyntaxException, IOException {
+		final JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
+		final URI uri = new URI(jira_url);
+		final Issue issue;
+		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(uri, username, new String(Base64.getDecoder().decode(password)));
+		try {
+			final Promise<Issue> promiseIssue = restClient.getIssueClient().getIssue(Id);
+			issue = promiseIssue.claim();
+		} finally {
+			restClient.close();
+		}
+		return issue;
+	}
+
+	private void linkStory(String issueId, String testId) throws IOException, URISyntaxException {
+		final JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
+		final URI uri = new URI(jira_url);
+		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(uri, username, new String(Base64.getDecoder().decode(password)));
+		try {
+			restClient.getIssueClient().linkIssue(new LinkIssuesInput(issueId, testId, "Depends", Comment.valueOf(testId + "test Id added"))).claim();
+		} finally {
+			restClient.close();
+		}
+	}
+
+	private String createRowStore(JiraMapping mp) {
+		List<String> strFinal = new ArrayList<String>();
+		for (String str : mp.getTestID()) {
+			strFinal.add("@" + str);
+		}
+		String st = StringUtils.join(strFinal, ",");
+		return (mp.getScenarioName() + ":" + "|" + (mp.getStoryId() != null ? ("@" + mp.getStoryId()) : " ") + "|"
+				+ (mp.getSubTaskId() != null ? ("@" + mp.getSubTaskId()) : " ") + "|" + st);
+	}
+
+	private void updateJiraStore(String strOrginal, String strNew) throws IOException {
+		List<String> replaced = Files.lines(Paths.get(store_path)).map(line -> line.replace(strOrginal, strNew)).collect(Collectors.toList());
+		Files.write(Paths.get(store_path), replaced);
+	}
+
+	private void addJiraStore(String strNew) throws IOException {
+		Path path = Paths.get(store_path);
+		Charset charset = Charset.forName("UTF-8");
+		ArrayList<String> lines = new ArrayList<>();
+		lines.add(strNew);
+		Files.write(path, lines, charset, StandardOpenOption.APPEND);
+	}
+
+	private String getJiraStore(String str) throws IOException {
+		String scenarioDetail = null;
+		Stream<String> lines = Files.lines(Paths.get(store_path));
+		Optional<String> hasScenario = lines.parallel().filter(s -> s.startsWith(str + ":")).findFirst();
+		if (hasScenario.isPresent()) {
+			scenarioDetail = hasScenario.get();
+		}
+		lines.close();
+		return scenarioDetail;
+	}
+
+	private JiraMapping jiraMapping(String str) {
+		String[] string = str.split(Pattern.quote("|"));
+		JiraMapping jm = new JiraMapping();
+		jm.setScenarioName((string[0].trim().substring(1)).replaceAll("[:]+", ""));
+		if (StringUtils.isNotBlank(string[1].trim())) {
+			jm.setStoryId(string[1].trim().substring(1));
+		}
+		if (StringUtils.isNotBlank(string[2].trim())) {
+			jm.setSubTaskId(string[2].trim().substring(1));
+		}
+		if (StringUtils.isNotBlank(string[3].trim())) {
+			List<String> lsitStr = new ArrayList<String>();
+			Stream.of(string[3].split(Pattern.quote(","))).forEach(id -> {
+				lsitStr.add(id.trim().substring(1));
+			});
+			jm.setTestID(lsitStr);
+		}
+		return jm;
+	}
+
+	private String updateTestId() throws URISyntaxException, IOException {
+		String testId = null;
+		for (String str : jiraMapping.getTestID()) {
+			Issue issue = getJiraIssueType(str);
+			if (this.testName.equalsIgnoreCase(issue.getSummary())) {
+				testId = issue.getKey();
+			}
+		}
+		return testId;
+	}
+
+	private String getStoreCycleKey() throws IOException {
+		String cycleKey = null;
+		Stream<String> lines = Files.lines(Paths.get(cycle_path));
+		Optional<String> hasScenario = lines.parallel().filter(s -> s.startsWith("cycleId" + "=")).findFirst();
+		if (hasScenario.isPresent()) {
+			cycleKey = StringUtils.substring(hasScenario.get(), 8, 15).trim();
+		}
+		lines.close();
+		return cycleKey;
+	}
+
+	private void updateStoreCycleKey(String strNew) throws IOException {
+		Stream<String> lines = Files.lines(Paths.get(cycle_path));
+		List<String> replaced = Files.lines(Paths.get(cycle_path))
+				.map(line -> line.replace(lines.parallel().filter(s -> s.startsWith("cycleId" + "=")).findFirst().get().toString(), strNew))
+				.collect(Collectors.toList());
+		Files.write(Paths.get(cycle_path), replaced);
+		lines.close();
+	}
+
+	private void creatCycle(String env, String cycleName, String desc) throws IOException {
+		this.cycleId = getStoreCycleKey();
+		if (StringUtils.isNotBlank(this.cycleId)) {
+			if (!currentCycleName.equalsIgnoreCase(getZephyrCycle())) {
+				creatZephyrCycle(env, cycleName, desc);
+			}
+		} else if (StringUtils.isBlank(this.cycleId)) {
+			creatZephyrCycle(env, cycleName, desc);
+		}
+	}
+
+	private void creatZephyrCycle(String env, String cycleName, String desc) throws IOException {
+		String url = this.jira_url + "rest/zapi/latest/cycle";
+		String input = "{  \"clonedCycleId\": \"\",  \"name\": \"" + cycleName + "\",  \"build\": \"\",  \"environment\": \"" + env + "\", "
+				+ " \"description\": \"" + desc + "\",  \"startDate\":  \"" + startCycleDate + "\",  \"endDate\":  \"" + endCycleDate + "\",  "
+				+ "\"projectId\": \"" + this.projectId + "\",\"versionId\": \"-1\"}";
+		Client client = Client.create();
+		client.addFilter(new HTTPBasicAuthFilter(username, new String(Base64.getDecoder().decode(password))));
+		WebResource webResource = client.resource(url);
+		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);
+		this.cycleId = JsonPath.read(response.getEntity(String.class), "id");
+		updateStoreCycleKey("cycleId=" + this.cycleId);
+	}
+
+	private String getZephyrCycle() {
+		String url = this.jira_url + "rest/zapi/latest/cycle/" + this.cycleId;
+		Client client = Client.create();
+		client.addFilter(new HTTPBasicAuthFilter(username, new String(Base64.getDecoder().decode(password))));
+		WebResource webResource = client.resource(url);
+		ClientResponse response = webResource.type("application/json").get(ClientResponse.class);
+		return JsonPath.read(response.getEntity(String.class), "name");
+	}
+
+	private void createJiraTest(String testCaseName) {
+		String urlString = this.jira_url + "rest/api/2/issue/";
+		String description = "test Created";
+		String urlPayload = "{ \"fields\":{\"project\":{\"key\": \"" + project_key + "\"}, \"summary\": \"" + testCaseName + "\", " + "\"description\": \""
+				+ description + "\",\"issuetype\": {\"name\": \"Test\"}} }";
+		Client client = Client.create();
+		client.addFilter(new HTTPBasicAuthFilter(username, new String(Base64.getDecoder().decode(password))));
+		WebResource webResource = client.resource(urlString);
+		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, urlPayload);
+		this.testId = JsonPath.read(response.getEntity(String.class), "key");
+	}
+
+	private void addTestsToCycle(String testCaseKey, String cycleId) {
+		String urlPayload = "{ \"issues\": [\"" + testCaseKey + "\"], \"versionId\": \"" + this.versionId + "\", \"cycleId\": \"" + cycleId
+				+ "\", \"projectId\": \"" + this.projectId + "\", \"method\": \"1\" }";
+		String urlString = this.jira_url + "rest/zapi/latest/execution/addTestsToCycle/";
+		LOGGER.info("URL:->" + urlString + "\nPayload:->" + urlPayload);
+		Client client = Client.create();
+		client.addFilter(new HTTPBasicAuthFilter(username, new String(Base64.getDecoder().decode(password))));
+		client.resource(urlString).type("application/json").post(ClientResponse.class, urlPayload);
+	}
+
+	private void createExecutionId(String testCaseId, String cycleId) {
+		String urlPayload = "{ \"versionId\": \"" + this.versionId + "\", \"cycleId\": \"" + cycleId + "\", \"projectId\": \"" + this.projectId
+				+ "\", \"issueId\": \"" + testCaseId + "\" }";
+		String urlString = this.jira_url + "rest/zapi/latest/execution";
+		LOGGER.info("URL:->" + urlString + "\nPayload:->" + urlPayload);
+		Client client = Client.create();
+		client.addFilter(new HTTPBasicAuthFilter(this.username, new String(Base64.getDecoder().decode(password))));
+		WebResource webResource = client.resource(urlString);
+		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, urlPayload);
+		List<Integer> issueIds = JsonPath.read(response.getEntity(String.class), "$.[*].id");
+		this.executionId = issueIds.get(0).toString();
+	}
+
+	private void updateExecution(String executionId, int updateStatus) {
+		String urlString = this.jira_url + "rest/zapi/latest/execution/" + executionId + "/execute";
+		String urlPayload = ("{  \"status\":\"" + 3 + "\"}");
+		String urlPayloadNew = ("{  \"status\":\"" + updateStatus + "\"}");
+		LOGGER.info("URL:->" + urlString + "\nPayload:->" + urlPayload);
+		Client client = Client.create();
+		client.addFilter(new HTTPBasicAuthFilter(this.username, new String(Base64.getDecoder().decode(password))));
+		client.resource(urlString).type("application/json").put(ClientResponse.class, urlPayload);
+		client.resource(urlString).type("application/json").put(ClientResponse.class, urlPayloadNew);
+	}
+
+	private void addTestDescription(String testId, String desc) throws URISyntaxException, IOException {
+		final JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
+		final URI uri = new URI(jira_url);
+		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(uri, this.username, new String(Base64.getDecoder().decode(password)));
+		try {
+			Map<String, FieldInput> fields = new HashMap<String, FieldInput>();
+			fields.put("description", new FieldInput("description", desc));
+			IssueInput issuein = new IssueInput(fields);
+			restClient.getIssueClient().updateIssue(testId, issuein).claim();
+		} finally {
+			restClient.close();
+		}
+	}
 }
