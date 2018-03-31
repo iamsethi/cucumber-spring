@@ -108,7 +108,20 @@ public class TletIdrDao {
 
 	}
 
+<<<<<<< HEAD
 	public void deleteTradeLetter(String tradeLetterId) {
+=======
+	public void deleteTradeLetter(List<String> tradeLetterIds) {
+		
+		
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue(Constants.APP_USER, impersonateUser);
+		parameters.addValue(Constants.BRKR_INSTX_ID, brkrInstxId);
+		jdbcTemplate.update(updtStgCAI, parameters);
+		LOGGER.info("###Broker Cash Agent Information approved successfully from Live table for Broker Instx ID : "
+				+ brkrInstxId);
+	
+>>>>>>> branch 'master' of https://github.com/iamsethi/cucumber-spring.git
 
 		LOGGER.info("####" + selectPartyIdByTLId);
 		jdbcTemplate.execute(selectPartyIdByTLId);
