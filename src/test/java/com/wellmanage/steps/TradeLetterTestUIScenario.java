@@ -31,6 +31,7 @@ import com.wellmanage.common.Locators;
 import com.wellmanage.common.SeleniumLib;
 //import com.wellmanage.database.TletIdrDao;
 //import com.wellmanage.jira.JiraIntegration;
+import com.wellmanage.database.TletIdrDao;
 
 import cucumber.api.DataTable;
 import cucumber.api.Scenario;
@@ -70,8 +71,8 @@ public class TradeLetterTestUIScenario implements En {
 	private Map<String, String> machineip;
 	private LinkedList<String> tradeLetter = new LinkedList<>();
 
-	//@Autowired
-	//private TletIdrDao tletIdrDao;
+	@Autowired
+	private TletIdrDao tletIdrDao;
 
 	@Autowired
 	// private JiraIntegration jiraIntegration;
@@ -103,7 +104,7 @@ public class TradeLetterTestUIScenario implements En {
 
 		if (!scenario.getSourceTagNames().stream().filter(tag -> tag.contains("@smoke")).collect(Collectors.toList())
 				.contains("@smoke")) {
-			//tletIdrDao.deleteTradeLetter(new ArrayList<>(tradeLetter));
+			tletIdrDao.deleteTradeLetter("5");
 		}
 
 	}

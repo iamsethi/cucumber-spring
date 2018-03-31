@@ -1,6 +1,10 @@
 Feature: Verify end to end functionality of Trade letters
 
   @test @stage1 @regression
+  Scenario: Verify search functionality of google
+    Given User navigates to IAPortal
+
+  @test @stage @regression
   Scenario: Verify add,search,update and delete functionality of Trade letters
     Given User navigates to IAPortal
     When User clicks on "Trade Letter" URL

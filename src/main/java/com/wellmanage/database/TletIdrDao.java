@@ -1,13 +1,11 @@
 package com.wellmanage.database;
 
-import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -15,14 +13,13 @@ import org.springframework.test.context.ContextConfiguration;
  *
  */
 @ContextConfiguration(locations = { "classpath*:/spring-context/applicationContext-smoke-suite.xml" })
-@Component
 public class TletIdrDao {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TletIdrDao.class);
 
-	// protected NamedParameterJdbcTemplate jdbcTemplate;
+	private JdbcTemplate jdbcTemplate;
 
-	protected DataSource dataSource;
+	private DataSource dataSources;
 	protected String PARTY_ID;
 
 	/** The delete TL acct group. */
@@ -106,16 +103,16 @@ public class TletIdrDao {
 	private String selectAdminPartyIdByAId;
 
 	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-		// jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+		this.dataSources = dataSource;
+		jdbcTemplate = new JdbcTemplate(dataSources);
+
 	}
 
-	public void deleteTradeLetter(List<String> tradeLetterIds) {
+	public void deleteTradeLetter(String tradeLetterId) {
 
-		// MapSqlParameterSource paramMap = new
-		// MapSqlParameterSource().addValue(Constants.TRADE_LETTER_ID,
-		// tradeLetterIds);
-		//
+		LOGGER.info("####" + selectPartyIdByTLId);
+		jdbcTemplate.execute(selectPartyIdByTLId);
+
 		// try {
 		// List<String> partyIds = jdbcTemplate.queryForList(selectPartyIdByTLId,
 		// paramMap, String.class);
