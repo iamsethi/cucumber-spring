@@ -122,6 +122,11 @@ public class JiraIntegration {
 			throws IOException, URISyntaxException {
 		if (jiraintegrationmode.equalsIgnoreCase("ON")) {
 			createJiraTest(this.testName);
+			creatCycle(this.environment, this.currentCycleName, this.cycledesc);
+			// addTestsToCycle(testId, this.cycleId);
+			// createExecutionId(getJiraIssueType(this.testId).getId().toString(),
+			// this.cycleId);
+			// updateExecution(executionId, this.testStatus);
 		}
 
 	}
@@ -231,11 +236,10 @@ public class JiraIntegration {
 
 	private void flowCycleCreationWithoutStory() throws URISyntaxException, IOException {
 		createJiraTest(this.testName);
-		// creatCycle(this.environment, this.currentCycleName, this.cycledesc);
-		// addTestsToCycle(testId, this.cycleId);
-		// createExecutionId(getJiraIssueType(this.testId).getId().toString(),
-		// this.cycleId);
-		// updateExecution(executionId, this.testStatus);
+		creatCycle(this.environment, this.currentCycleName, this.cycledesc);
+		addTestsToCycle(testId, this.cycleId);
+		createExecutionId(getJiraIssueType(this.testId).getId().toString(), this.cycleId);
+		updateExecution(executionId, this.testStatus);
 	}
 
 	private void flowCycleUpdateWithoutStory() throws URISyntaxException, IOException {
