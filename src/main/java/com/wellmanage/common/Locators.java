@@ -10,7 +10,7 @@ import com.google.common.base.Function;
  */
 public class Locators {
 
-	public static final String xpthMenuFrame = "//*[@id='csw_menuspace']/frame[1]";
+	public static final String xpthMenuFrame = "//*[@id='csw_menuspace']/frame[1] ";
 	public static final String xpthPortalLink = "//a[text()='IA Portal']";
 	public static final String xpthTCSFrame = "//*[@id=\"csw_menuspace\"]/frame[2]";
 	public static final String xpthAddNew = "//i[@class='fa fa-plus']";
