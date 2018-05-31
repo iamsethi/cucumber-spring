@@ -37,7 +37,7 @@ import com.google.common.base.Function;
 /**
  * This library is a wrapper for Selenium webdriver
  * 
- * @author averma
+ * @author ksethi
  * 
  */
 public class SeleniumLib {
